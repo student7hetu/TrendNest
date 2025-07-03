@@ -15,14 +15,12 @@ interface FilterContextType {
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
-export const FilterProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectCategory, setSelectCategory] = useState<string>('');
+export const FilterProvider = ({ children }: { children: ReactNode }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectCategory, setSelectCategory] = useState('');
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
-  const [keywords, setKeywords] = useState<string>('');
+  const [keywords, setKeywords] = useState('');
 
   return (
     <FilterContext.Provider
@@ -46,8 +44,6 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({
 
 export const useFilter = () => {
   const context = useContext(FilterContext);
-  if (context === undefined) {
-    throw new Error('useFilter must be used within a FilterProvider');
-  }
+  if (!context) throw new Error('useFilter must be used within FilterProvider');
   return context;
 };

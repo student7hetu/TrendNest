@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useFilter } from './FilterContext';
 
-interface Product {
-  category: string;
-}
-
-interface FetchResponse {
-  products: Product[];
-}
-
 const Sidebar = () => {
   const {
     searchQuery,
@@ -23,50 +15,18 @@ const Sidebar = () => {
   } = useFilter();
 
   const [categories, setCategories] = useState<string[]>([]);
-  const [keywords] = useState<string[]>([
-    'apple',
-    'watch',
-    'Fashion',
-    'trend',
-    'shoes',
-    'shirts',
-  ]);
+  const keywordList = ['apple', 'watch', 'fashion', 'trend', 'shoes', 'shirts'];
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('https://dummyjson.com/products');
-        const data: FetchResponse = await response.json();
-        const uniqueCategories = Array.from(
-          new Set(data.products.map((product) => product.category))
-        );
-        setCategories(uniqueCategories);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-    fetchCategories();
+    fetch('https://dummyjson.com/products')
+      .then((res) => res.json())
+      .then((data) => {
+        const unique = Array.from(new Set(data.products.map((p: any) => p.category))) as string[];
+        setCategories(unique);
+      });
   }, []);
 
-  const handleMinPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setMinPrice(value ? parseFloat(value) : undefined);
-  };
-
-  const handleMaxPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setMaxPrice(value ? parseFloat(value) : undefined);
-  };
-
-  const handleRadioChangeCategories = (category: string) => {
-    setSelectCategory(category);
-  };
-
-  const handleKeywordClick = (keyword: string) => {
-    setKeywords(keyword);
-  };
-
-  const hanleResetFilters = () => {
+  const resetFilters = () => {
     setSearchQuery('');
     setSelectCategory('');
     setMinPrice(undefined);
@@ -75,91 +35,73 @@ const Sidebar = () => {
   };
 
   return (
-    <div className='w-[360px] min-h-screen bg-white shadow-xl flex items-start justify-center'>
-      <div className='w-full max-w-[300px] px-4 py-10 flex flex-col gap-10'>
-        <h1 className='text-3xl font-extrabold text-gray-900 tracking-tight'>
-          TrendNest
-        </h1>
+    <aside className="w-[320px] bg-white shadow-lg p-6 flex flex-col gap-6">
+      <h1 className="text-2xl font-bold text-gray-900">TrendNest</h1>
 
-        {/* Search */}
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Search product"
+        className="border px-4 py-2 rounded w-full placeholder:text-gray-500"
+      />
+
+      <div className="flex gap-3">
         <input
-          type='text'
-          placeholder=' Search Product'
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className='border border-gray-300 px-4 py-3 text-base placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black transition'
+          type="number"
+          placeholder="Min"
+          value={minPrice ?? ''}
+          onChange={(e) => setMinPrice(parseFloat(e.target.value))}
+          className="border px-4 py-2 rounded w-full"
         />
-
-        {/* Price Filter */}
-        <div className='flex gap-4'>
-          <input
-            type='text'
-            placeholder=' Min'
-            value={minPrice ?? ''}
-            onChange={handleMinPriceChange}
-            className='border border-gray-300 px-4 py-3 text-base w-full placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black transition'
-          />
-          <input
-            type='text'
-            placeholder=' Max'
-            value={maxPrice ?? ''}
-            onChange={handleMaxPriceChange}
-            className='border border-gray-300 px-4 py-3 text-base w-full placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black transition'
-          />
-        </div>
-
-        {/* Categories */}
-        <div>
-          <h2 className='text-xl font-semibold text-gray-900 mb-4 capitalize'>
-            Categories
-          </h2>
-          <div className='flex flex-col gap-3'>
-            {categories.map((category, index) => (
-              <label
-                key={index}
-                className='flex items-center gap-3 text-gray-800 hover:text-black cursor-pointer transition capitalize text-base'
-              >
-                <input
-                  type='radio'
-                  name='category'
-                  value={category}
-                  onChange={() => handleRadioChangeCategories(category)}
-                  checked={selectCategory === category}
-                  className='accent-black w-4 h-4'
-                />
-                {category}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Keywords */}
-        <div>
-          <h2 className='text-xl font-semibold text-gray-900 mb-4 capitalize'>
-            Keywords
-          </h2>
-          <div className='flex flex-col gap-3'>
-            {keywords.map((keyword, index) => (
-              <button
-                key={index}
-                onClick={() => handleKeywordClick(keyword)}
-                className='w-full text-left px-4 py-2 bg-gray-100 text-gray-800 hover:bg-black hover:text-white transition text-base font-medium capitalize flex items-center justify-center rounded'
-              >
-                {keyword}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Reset Button */}
-        <button
-          className='w-full bg-black text-white py-3 hover:bg-gray-800 transition font-semibold text-base'
-          onClick={hanleResetFilters}
-        >
-          Reset Filters
-        </button>
+        <input
+          type="number"
+          placeholder="Max"
+          value={maxPrice ?? ''}
+          onChange={(e) => setMaxPrice(parseFloat(e.target.value))}
+          className="border px-4 py-2 rounded w-full"
+        />
       </div>
-    </div>
+
+      <div>
+        <h2 className="font-semibold text-lg mb-2">Categories</h2>
+        {categories.map((cat) => (
+          <label
+            key={cat}
+            className="flex gap-2 items-center capitalize mb-2 cursor-pointer"
+          >
+            <input
+              type="radio"
+              checked={selectCategory === cat}
+              onChange={() => setSelectCategory(cat)}
+              name="category"
+              className="accent-black"
+            />
+            {cat}
+          </label>
+        ))}
+      </div>
+
+      <div>
+        <h2 className="font-semibold text-lg mb-2">Keywords</h2>
+        {keywordList.map((word) => (
+          <button
+            key={word}
+            onClick={() => setKeywords(word)}
+            className="w-full mb-2 bg-gray-100 hover:bg-black hover:text-white px-3 py-2 rounded capitalize"
+          >
+            {word}
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={resetFilters}
+        className="mt-auto w-full bg-black text-white py-3 rounded hover:bg-gray-800"
+      >
+        Reset Filters
+      </button>
+    </aside>
   );
 };
 
