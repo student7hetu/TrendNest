@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* Reset and box model */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body styles */
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f0f1f1;
+  color: #1f2937; /* Tailwind's gray-800 for text */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Optional scrollbar styling for smooth look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0; /* Tailwind gray-300 */
+  border-radius: 10px;
+}
